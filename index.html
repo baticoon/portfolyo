@@ -650,9 +650,16 @@
           io.unobserve(x.target);
         }
       });
-    },{threshold:.15,rootMargin:"0px 0px -6% 0px"});
+    },{threshold:0,rootMargin:"0px 0px -5% 0px"});
     document.querySelectorAll(".rv").forEach(function(el,i){
-      el.style.transitionDelay=(Math.min(i%4,3)*0.08)+"s";io.observe(el);
+      el.style.transitionDelay=(Math.min(i%4,3)*0.08)+"s";
+      var r=el.getBoundingClientRect();
+      if(r.top < innerHeight*0.92){
+        requestAnimationFrame(function(){el.classList.add("in");});
+        if(el.classList.contains("stats"))countUp();
+      } else {
+        io.observe(el);
+      }
     });
   }
   var counted=false;
@@ -788,6 +795,20 @@
     }
     requestAnimationFrame(draw);
   })();
+})();
+</script>
+<script>
+/* safety net: guarantee all reveal elements become visible even if the
+   IntersectionObserver / intro sequence fails in a given preview/iframe env */
+(function(){
+  function showAll(){
+    var els=document.querySelectorAll(".rv");
+    for(var i=0;i<els.length;i++){els[i].classList.add("in");}
+  }
+  function arm(){setTimeout(showAll,1200);}
+  if(document.readyState==="complete"){arm();}
+  else{window.addEventListener("load",arm);}
+  setTimeout(showAll,2600);
 })();
 </script>
 </body>
